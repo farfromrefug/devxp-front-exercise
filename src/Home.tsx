@@ -5,10 +5,8 @@ import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 const API_KEY = '1d868d05865a228a5fb2fc24c37d7b36';
 const API_URL = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=fr-FR&region=FR`;
 
-export type HomeRouteParams = undefined;
-
 export const Home = () => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<any[]>([]);
 
   useEffect(() => {
     axios({ method: 'get', url: API_URL }).then((json) =>
@@ -16,7 +14,7 @@ export const Home = () => {
     );
   }, []);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: any }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{item.title}</Text>
     </View>
