@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Interviewer notes — never commit
+INTERVIEW_NOTES.md

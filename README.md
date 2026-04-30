@@ -28,11 +28,18 @@ This repository is intentionally rough around the edges. The home screen lives i
 
 Read through `src/Home.tsx` and identify everything you would flag in a pull-request review. Consider correctness, performance, type-safety, security, and React / React Native best practices. Be ready to discuss what you'd change and why.
 
-### Part 2 — Sort feature
+### Part 2 — Posters
+
+Each TMDB movie has a `poster_path` field. Show the poster next to (or above) the title in each row.
+
+- The full image URL is `https://image.tmdb.org/t/p/w200${poster_path}`.
+- Some movies may not have a poster — handle that gracefully.
+
+### Part 3 — Sort feature
 
 Extend the home screen so the user can sort the movie list **by title**:
 
 - alphabetically (A → Z)
 - reverse-alphabetically (Z → A)
 
-Add a control of your choice (button, segmented control, switch, etc.) to toggle between the two orders. The original fetched order does not need to be preserved.
+Add a control of your choice (button, segmented control, switch, etc.) to toggle between the two orders.
