@@ -10,7 +10,7 @@ export const Home = () => {
 
   useEffect(() => {
     axios({ method: "get", url: API_URL }).then((json) => {
-      (setMovies(json.data.results), console.log(json.data.results));
+      setMovies(json.data.results);
     });
   }, []);
 
