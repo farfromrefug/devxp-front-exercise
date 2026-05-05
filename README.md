@@ -10,14 +10,26 @@ npm install
 
 ## Run
 
-```bash
-npm run ios
-```
+The simplest way is to use **Expo Go** on your phone — no Xcode or Android Studio required.
 
-or
+1. Install [Expo Go](https://expo.dev/go) from the App Store (iOS) or Play Store (Android).
+2. Start the dev server:
+   ```bash
+   npm start
+   ```
+3. Scan the QR code shown in the terminal:
+   - **iOS** — with the built-in Camera app.
+   - **Android** — from inside the Expo Go app.
+
+Make sure your phone and computer are on the same Wi-Fi network.
+
+### Alternative — simulator
+
+If you have Xcode or Android Studio installed:
 
 ```bash
-npm run android
+npm run ios       # iOS simulator
+npm run android   # Android emulator
 ```
 
 ## Exercise
