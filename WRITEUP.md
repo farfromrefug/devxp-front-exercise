@@ -52,6 +52,11 @@ We use `useMemo` to cache `formattedTitle` so that is only computed on `title` c
 The `App` was using `SafeAreaProvider` without implementing `SafeAreaInsetsContext.Consumer` on root components
 When using `SafeAreaProvider` we need wrap root component in `SafeAreaInsetsContext.Consumer`
 
+## Bug 8 — Filters "double" watch on selectedTags
+
+in `Filters`, in `toggle` we do another call to `watch` which is unecessary because `selectedTags` already contains the current value of form `selectedTags` for the current state
+The cleaner solution is to use `selectedTags` directly in `toggle`
+
 ---
 
 ## Anything else?

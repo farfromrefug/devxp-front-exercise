@@ -19,14 +19,13 @@ export const Filters = () => {
   const selectedTags = watch("selectedTags");
 
   const toggle = (tag: string) => {
-    const current = watch("selectedTags");
-    if (current.includes(tag)) {
+    if (selectedTags.includes(tag)) {
       setValue(
         "selectedTags",
-        current.filter((t) => t !== tag),
+        selectedTags.filter((t) => t !== tag),
       );
     } else {
-      setValue("selectedTags", [...current, tag]);
+      setValue("selectedTags", [...selectedTags, tag]);
     }
   };
 
