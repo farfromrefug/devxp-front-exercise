@@ -42,5 +42,6 @@ yarn-error.*
 
 # Interviewer notes — never commit
 INTERVIEW_NOTES.md
+INTERVIEW_NOTES_SEARCH.md
 REFERENCE_SOLUTION.md
 INTERVIEW_QUESTIONS.md

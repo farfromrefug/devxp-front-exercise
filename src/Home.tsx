@@ -1,37 +1,104 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
-
-const API_KEY = "1d868d05865a228a5fb2fc24c37d7b36";
-const API_URL = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=fr-FR&region=FR`;
+import { memo, useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { MovieTitle } from "./MovieTitle";
+import { fetchNowPlaying, fetchSearch, type Movie } from "./tmdb";
+import { useDebounce } from "./useDebounce";
 
 export const Home = () => {
-  const [movies, setMovies] = useState<any[]>([]);
+  const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
+  const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
+  const [displayedMovies, setDisplayedMovies] = useState<Movie[]>([]);
+  const [query, setQuery] = useState("");
+  const [shouldClear, setShouldClear] = useState(false);
+
+  const debouncedQuery = useDebounce(query, 300);
 
   useEffect(() => {
-    axios({ method: "get", url: API_URL }).then((json) => {
-      setMovies(json.data.results);
-    });
+    fetchNowPlaying().then(setNowPlaying);
   }, []);
 
-  const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.item}>
-      <Text style={styles.title}>{item.title}</Text>
+  useEffect(() => {
+    if (!debouncedQuery) {
+      setSearchResults(null);
+      return;
+    }
+    fetchSearch(debouncedQuery).then(setSearchResults);
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    setDisplayedMovies(searchResults ?? nowPlaying);
+  }, [searchResults, nowPlaying]);
+
+  useEffect(() => {
+    if (shouldClear) {
+      setQuery("");
+      setSearchResults(null);
+      setShouldClear(false);
+    }
+  }, [shouldClear]);
+
+  const handleMoviePress = (id: number) => {
+    console.log("Movie pressed:", id);
+  };
+
+  const SearchBar = () => (
+    <View style={styles.searchBar}>
+      <TextInput
+        style={styles.input}
+        placeholder="Search movies…"
+        placeholderTextColor="#888"
+        value={query}
+        onChangeText={setQuery}
+        autoCorrect={false}
+        autoCapitalize="none"
+      />
+      <Pressable
+        onPress={() => setShouldClear(true)}
+        style={styles.clearButton}
+        hitSlop={8}
+      >
+        <Text style={styles.clearText}>×</Text>
+      </Pressable>
     </View>
   );
 
+  const renderSearchBar = () => <SearchBar />;
+
   return (
     <View style={styles.container}>
-      <Text style={{ alignSelf: "center", fontSize: 20 }}>Recent movies</Text>
+      <Text style={styles.header}>Recent movies</Text>
+
+      {renderSearchBar()}
 
       <FlatList
-        data={movies}
-        renderItem={renderItem}
+        data={displayedMovies}
+        renderItem={({ item }) => (
+          <MovieRow movie={item} onPress={(id) => handleMoviePress(id)} />
+        )}
         keyExtractor={(item) => item.id.toString()}
       />
     </View>
   );
 };
+
+type MovieRowProps = {
+  movie: Movie;
+  onPress: (id: number) => void;
+};
+
+const MovieRow = ({ movie, onPress }: MovieRowProps) => (
+  <Pressable onPress={() => onPress(movie.id)} style={styles.item}>
+    <MovieTitle title={movie.title} />
+  </Pressable>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -39,16 +106,48 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 34,
   },
+  header: {
+    alignSelf: "center",
+    fontSize: 20,
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  clearButton: {
+    paddingHorizontal: 8,
+  },
+  clearText: {
+    fontSize: 22,
+    color: "#888",
+  },
   item: {
     backgroundColor: "lightblue",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    flexDirection: "row",
+    // flexDirection: "row",
     alignItems: "center",
   },
   title: {
     fontSize: 16,
     flexShrink: 1,
+  },
+  poster: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
   },
 });
