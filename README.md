@@ -92,11 +92,13 @@ The TMDB helpers (`fetchNowPlaying`, `fetchSearch`) live in [`src/tmdb.ts`](src/
 
 ### Time
 
-Aim for around **4 hours**. Note your actual time at the top of `WRITEUP.md` — honest estimates help us calibrate.
+Aim for **1 to 4 hours**, but no stress if it takes longer. Note your actual time at the top of `WRITEUP.md` — honest estimates help us calibrate.
 
-### Allowed
+### AI assistants
 
-Any docs (React docs, RN docs, TanStack Query docs, blog posts, AI assistants). If a fix came straight from a doc or AI suggestion, mention it briefly in your writeup — we care about understanding, not memorization.
+Please **try not to use AI** for this exercise. The whole point is to see your own debugging instincts and React mental model — if Claude / ChatGPT / Cursor solves the bugs, we learn nothing about you. Docs (React, RN, TanStack Query, react-hook-form, blog posts) are fully fine.
+
+If you do reach for an AI at any point, write down in `WRITEUP.md` where and for what — we won't penalize honest use, but undisclosed AI use is a hard no.
 
 ### Not required
 
