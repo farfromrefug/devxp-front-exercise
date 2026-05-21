@@ -41,6 +41,12 @@ The solution is to use a `clearQuery` method which clears `query` and `searchRes
 
 the `useDebounce` hook is calling `setTimeout` on each `value` change without clearing the "current" timeout. This is not an anti pattern it is simply a wrong implementation of debounce
 
+## Bug 6 — MovieTitle: formattedTitle
+
+`formattedTitle` computation is expensive. `formattedTitle` was computed on each `MovieTitle` render.
+
+We use `useMemo` to cache `formattedTitle` so that is only computed on `title` change
+
 ---
 
 ## Anything else?

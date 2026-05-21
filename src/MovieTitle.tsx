@@ -1,10 +1,15 @@
 import { StyleSheet, Text, type TextProps } from "react-native";
 import { applyTypography } from "./utils/components/applyTypography";
+import { useMemo } from "react";
 
 type MovieTitleProps = TextProps & { title: string };
 
 export const MovieTitle = ({ title, style, ...rest }: MovieTitleProps) => {
-  const formattedTitle = applyTypography(title);
+
+  const formattedTitle = useMemo(() => {
+    return applyTypography(title);
+  }, [title])
+  
   return (
     <Text {...rest} style={[styles.title, style]} numberOfLines={2}>
       {formattedTitle}
