@@ -8,8 +8,20 @@ import {
 } from "react-native";
 import { ALL_FILTERS, type Filter } from "./data/filters";
 import { SafeAreaInsetsContext } from "react-native-safe-area-context";
+import { memo } from "react";
 
 type FormValues = { selectedTags: string[] };
+type TagChipProps = {
+  filter: Filter;
+  selected: boolean;
+  onPress: () => void;
+};
+type TagChipMemoProps = {
+  filter: Filter;
+  selected: boolean;
+  toggle: (id: string) => void;
+};
+
 
 export const Filters = () => {
   const { watch, setValue } = useForm<FormValues>({
@@ -29,6 +41,17 @@ export const Filters = () => {
     }
   };
 
+  const TagChipMemo = memo(({ filter, selected, toggle }: TagChipMemoProps)=>{
+    return (
+              <TagChip
+                key={filter.id}
+                filter={filter}
+                selected={selected}
+                onPress={() => toggle(filter.id)}
+              />
+            );
+  })
+
   return (
     
     <SafeAreaInsetsContext.Consumer>
@@ -39,11 +62,11 @@ export const Filters = () => {
           {ALL_FILTERS.map((filter) => {
             const isSelected = selectedTags.includes(filter.id);
             return (
-              <TagChip
+              <TagChipMemo
                 key={filter.id}
                 filter={filter}
                 selected={isSelected}
-                onPress={() => toggle(filter.id)}
+                toggle={toggle}
               />
             );
           })}
@@ -52,12 +75,6 @@ export const Filters = () => {
       }
     </SafeAreaInsetsContext.Consumer>
   );
-};
-
-type TagChipProps = {
-  filter: Filter;
-  selected: boolean;
-  onPress: () => void;
 };
 
 const TagChip = ({ filter, selected, onPress }: TagChipProps) => (

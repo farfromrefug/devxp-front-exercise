@@ -1,6 +1,6 @@
 # Writeup
 
-**Time spent bug fixes**: around 1h10
+**Time spent bug fixes**: around 1h20
 
 ---
 
@@ -56,6 +56,11 @@ When using `SafeAreaProvider` we need wrap root component in `SafeAreaInsetsCont
 
 in `Filters`, in `toggle` we do another call to `watch` which is unecessary because `selectedTags` already contains the current value of form `selectedTags` for the current state
 The cleaner solution is to use `selectedTags` directly in `toggle`
+
+## Bug 9 — Filters TagChip created on every render pass
+
+On every render pass we loop `ALL_FILTERS` and return a `TagChip`. So as we watch `selectedTags`, on every toggle of a chip we trigger a `Filters` render and thus the `ALL_FILTERS` and thus a `TagChip` render for every chip.
+We use memo to skip rendering `TagChip` when it has not changed
 
 ---
 
