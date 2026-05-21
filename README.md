@@ -51,7 +51,9 @@ Right now both API calls (now-playing list + search) use raw `useState` + `useEf
 
 ### 2. Implement Recent Searches
 
-Below the search bar, show the last 5 non-empty queries the user actually ran as tappable chips. Tapping a chip refills the input and re-runs the search. Dedup; cap at 5; in-memory only — no persistence.
+Below the search bar, show the last 5 non-empty queries the user actually ran as tappable chips. Tapping a chip refills the input and re-runs the search. Dedup; cap at 5.
+
+Persist them to device storage so they survive app restarts. Pick a library that fits this setup — we'll discuss the tradeoffs of your choice in the debrief.
 
 ### 3. Add posters
 
@@ -62,17 +64,16 @@ Each TMDB movie has a `poster_path` field. Show the poster next to the title in 
 
 ### 4. Fix the bottom tab bar spacing
 
-The `Home / Filters` tab bar at the bottom of the screen uses a hardcoded `paddingBottom` to clear the home indicator / gesture bar. That magic number is wrong on most devices. Make it adapt to the actual safe-area inset.
+The `Home / Filters` tab bar at the bottom of the screen does not display properly on android with big system navigation bar
 
 ### 5. Find and fix the bugs
 
 There are **at least six** React-specific issues across the codebase — most on the **Home** screen and the files it imports, plus one on the **Filters** screen, plus one or two more that will emerge from your refactor in Task 1. They range from clearly-wrong-on-read, to performance problems you'll have to profile, to UX bugs that only show up once Suspense is wired in.
 
-> **You'll want [React DevTools](https://react.dev/learn/react-developer-tools) for the perf ones.** Install with `npx react-devtools` (it attaches to your Expo app) and use the **Profiler** and **"Highlight component renders"** feature. The app feels sluggish in some interactions — that's a real symptom, not a placebo. Find the root cause and fix it.
->
-> **Hint on the Filters screen**: tapping any chip causes every other chip on screen to re-render too, even chips whose selected state didn't change. Confirm it in DevTools "Highlight component renders," then figure out why — the cause is `react-hook-form`-specific, and the fix changes both how the parent reads the form state and how the chips subscribe to it.
+> **Hint on the Filters screen**: tapping any chip causes every other chip on screen to re-render too, even chips whose selected state didn't change. figure out why
 
 For each bug, write a short note in [`WRITEUP.md`](WRITEUP.md):
+
 - **What was wrong** (symptom + underlying cause).
 - **How you found it** (devtools, code read, network panel, etc.).
 - **Why React behaves this way** — the mental model. This is the part we care about most.
