@@ -18,9 +18,12 @@ We were using a state for `displayedMovies` where we can just use a const in the
 I saw it because the useEffect was simply setting `displayedMovies` when `searchResults` or `nowPlaying`.
 But changing the state of those would couse the render loop for `Home` to be called. So we if we simply set `const displayedMovies = searchResults ?? nowPlaying` it remove the need for another state change (`displayedMovies`)
 
-## Bug 2 — _short title_
+## Bug 2 — SearchBar component
 
-_Your notes_
+SearchBar should not be defined inside `Home` but as a separated component
+This prevents uncessary component function created on every `Home` render
+
+Though SearchBar is using `query`, `setQuery`, `setShouldClear`. To do it right we need to expose `onClear`  and `onChangeText`
 
 ## Bug 3 — _short title_
 

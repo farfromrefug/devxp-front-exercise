@@ -12,6 +12,28 @@ import { MovieTitle } from "./MovieTitle";
 import { fetchNowPlaying, fetchSearch, type Movie } from "./tmdb";
 import { useDebounce } from "./useDebounce";
 
+
+
+const SearchBar = ({query, onChangeText, onClear}: {query:string; onChangeText: (text: string) => void; onClear: ()=>void}) => (
+  <View style={styles.searchBar}>
+    <TextInput
+      style={styles.input}
+      placeholder="Search movies…"
+      placeholderTextColor="#888"
+      value={query}
+      onChangeText={onChangeText}
+      autoCorrect={false}
+      autoCapitalize="none"
+    />
+    <Pressable
+      onPress={()=>onClear()}
+      style={styles.clearButton}
+      hitSlop={8}
+    >
+      <Text style={styles.clearText}>×</Text>
+    </Pressable>
+  </View>
+);
 export const Home = () => {
   const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
   const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
@@ -49,28 +71,8 @@ export const Home = () => {
     console.log("Movie pressed:", id);
   };
 
-  const SearchBar = () => (
-    <View style={styles.searchBar}>
-      <TextInput
-        style={styles.input}
-        placeholder="Search movies…"
-        placeholderTextColor="#888"
-        value={query}
-        onChangeText={setQuery}
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-      <Pressable
-        onPress={() => setShouldClear(true)}
-        style={styles.clearButton}
-        hitSlop={8}
-      >
-        <Text style={styles.clearText}>×</Text>
-      </Pressable>
-    </View>
-  );
 
-  const renderSearchBar = () => <SearchBar />;
+  const renderSearchBar = () => <SearchBar query={query} onChangeText={setQuery} onClear={() => setShouldClear(true)}/>
 
   return (
     <View style={styles.container}>
