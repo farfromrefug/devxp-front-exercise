@@ -25,6 +25,12 @@ This prevents uncessary component function created on every `Home` render
 
 Though SearchBar is using `query`, `setQuery`, `setShouldClear`. To do it right we need to expose `onClear`  and `onChangeText`
 
+## Bug 3 — renderSearchBar is unnecessary
+
+`SearchBar` was rendered on each `Home` render call through `renderSearchBar`. It was unnecessary as there were no `if` or other operation which would require `renderSearchBar`
+
+The solution is to define `SearchBar` directly in the `Home` returned template
+
 ## Bug 3 — _short title_
 
 _Your notes_

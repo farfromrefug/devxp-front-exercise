@@ -71,14 +71,11 @@ export const Home = () => {
     console.log("Movie pressed:", id);
   };
 
-
-  const renderSearchBar = () => <SearchBar query={query} onChangeText={setQuery} onClear={() => setShouldClear(true)}/>
-
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Recent movies</Text>
 
-      {renderSearchBar()}
+      <SearchBar query={query} onChangeText={setQuery} onClear={() => setShouldClear(true)}/>
 
       <FlatList
         data={displayedMovies}
