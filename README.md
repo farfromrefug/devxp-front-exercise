@@ -38,16 +38,23 @@ The app has two screens: a **Home** screen with a movie search, and a **Filters*
 
 > ⚠️ **Please don't look at git history** (`git log`, `git blame`, the branch diff against `main`, etc.). The commit messages and prior state give away most of the bugs and would short-circuit the exercise. Treat the current working tree as the only source of truth.
 
-There are five tasks. They can be done in any order, but expect them to overlap (some refactors will touch the same code as some bug fixes).
+There are five tasks. **Please do them in the order below** — Task 5 (React Query + Suspense) is the final migration of the working code you've built, and one of the bugs only shows up after that refactor.
 
-### 1. Refactor data fetching to TanStack React Query, with Suspense
+### Working style
 
-Right now both API calls (now-playing list + search) use raw `useState` + `useEffect`. That's the React equivalent of fetching with `XMLHttpRequest` — fine for a demo, not what we ship.
+Make an **atomic commit + push** after each task, and within Task 1 after each bug fix. We'd rather see twelve small clean commits than one giant "exercise solution" commit — your git history is part of what we'll review. Keep commit messages descriptive (what changed + why).
 
-- Install [`@tanstack/react-query`](https://tanstack.com/query/latest/docs/framework/react/installation) and set up a `QueryClientProvider` at the app root.
-- Use **`useSuspenseQuery`** (not `useQuery`) for both calls, and wrap your tree in `<Suspense>` with a sensible fallback. We want the modern Suspense-driven data-fetching story, not hand-rolled loading flags.
-- Pick a sensible `queryKey` design.
-- Loading and error UI should fall out of Suspense + error boundaries, not from a hand-rolled `isLoading` boolean.
+### 1. Find and fix the bugs
+
+There are **at least six** React-specific issues across the codebase — most on the **Home** screen and the files it imports, plus one on the **Filters** screen. They range from clearly-wrong-on-read, to performance problems you'll have to profile. One more bug only emerges once you wire up Suspense in Task 5 — you'll come back to it then.
+
+> **Hint on the Filters screen**: tapping any chip causes every other chip on screen to re-render too, even chips whose selected state didn't change. figure out why
+
+For each bug, write a short note in [`WRITEUP.md`](WRITEUP.md):
+
+- **What was wrong** (symptom + underlying cause).
+- **How you found it** (devtools, code read, network panel, etc.).
+- **Why React behaves this way** — the mental model. This is the part we care about most.
 
 ### 2. Implement Recent Searches
 
@@ -66,17 +73,16 @@ Each TMDB movie has a `poster_path` field. Show the poster next to the title in 
 
 The `Home / Filters` tab bar at the bottom of the screen does not display properly on android with big system navigation bar
 
-### 5. Find and fix the bugs
+### 5. Refactor data fetching to TanStack React Query, with Suspense
 
-There are **at least six** React-specific issues across the codebase — most on the **Home** screen and the files it imports, plus one on the **Filters** screen, plus one or two more that will emerge from your refactor in Task 1. They range from clearly-wrong-on-read, to performance problems you'll have to profile, to UX bugs that only show up once Suspense is wired in.
+Right now both API calls (now-playing list + search) use raw `useState` + `useEffect`. That's the React equivalent of fetching with `XMLHttpRequest` — fine for a demo, not what we ship.
 
-> **Hint on the Filters screen**: tapping any chip causes every other chip on screen to re-render too, even chips whose selected state didn't change. figure out why
+- Install [`@tanstack/react-query`](https://tanstack.com/query/latest/docs/framework/react/installation) and set up a `QueryClientProvider` at the app root.
+- Use **`useSuspenseQuery`** (not `useQuery`) for both calls, and wrap your tree in `<Suspense>` with a sensible fallback. We want the modern Suspense-driven data-fetching story, not hand-rolled loading flags.
+- Pick a sensible `queryKey` design.
+- Loading and error UI should fall out of Suspense + error boundaries, not from a hand-rolled `isLoading` boolean.
 
-For each bug, write a short note in [`WRITEUP.md`](WRITEUP.md):
-
-- **What was wrong** (symptom + underlying cause).
-- **How you found it** (devtools, code read, network panel, etc.).
-- **Why React behaves this way** — the mental model. This is the part we care about most.
+A new bug will appear once Suspense is in place. Diagnose it, fix it, and add it to your `WRITEUP.md`.
 
 ---
 
