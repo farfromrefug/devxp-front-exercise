@@ -47,8 +47,18 @@ the `useDebounce` hook is calling `setTimeout` on each `value` change without cl
 
 We use `useMemo` to cache `formattedTitle` so that is only computed on `title` change
 
+## Bug 7 — SafeAreaProvider
+
+The `App` was using `SafeAreaProvider` without implementing `SafeAreaInsetsContext.Consumer` on root components
+When using `SafeAreaProvider` we need wrap root component in `SafeAreaInsetsContext.Consumer`
+
 ---
 
 ## Anything else?
+
+* `applyTypography` is wrong. It does not do what the comment says and does not even return the kerning. I suppose it was for the purpose of creating an expensive task
+
+* `applyTypography` is effectively doing nothing so my mind is saying that heavy operation should be done after fetching through `fetchSearch` or `fetchNowPlaying`. But in the meantime as to comment says it is supposed to compute kerning for react-native, it does make sense to do it here and have it "depend" on title.
+
 
 Anything that surprised you, anything you'd do differently with more time, anything you suspect is still buggy but couldn't pin down — drop it here. Optional.

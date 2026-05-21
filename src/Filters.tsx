@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { ALL_FILTERS, type Filter } from "./data/filters";
+import { SafeAreaInsetsContext } from "react-native-safe-area-context";
 
 type FormValues = { selectedTags: string[] };
 
@@ -30,23 +31,27 @@ export const Filters = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Filter movies</Text>
-      <Text style={styles.subheader}>{selectedTags.length} selected</Text>
-      <ScrollView contentContainerStyle={styles.chipContainer}>
-        {ALL_FILTERS.map((filter) => {
-          const isSelected = selectedTags.includes(filter.id);
-          return (
-            <TagChip
-              key={filter.id}
-              filter={filter}
-              selected={isSelected}
-              onPress={() => toggle(filter.id)}
-            />
-          );
-        })}
-      </ScrollView>
-    </View>
+    
+    <SafeAreaInsetsContext.Consumer>
+          {insets =>  <View style={{ ...styles.container, paddingTop: insets?.top ?? 0 }}>
+        <Text style={styles.header}>Filter movies</Text>
+        <Text style={styles.subheader}>{selectedTags.length} selected</Text>
+        <ScrollView contentContainerStyle={styles.chipContainer}>
+          {ALL_FILTERS.map((filter) => {
+            const isSelected = selectedTags.includes(filter.id);
+            return (
+              <TagChip
+                key={filter.id}
+                filter={filter}
+                selected={isSelected}
+                onPress={() => toggle(filter.id)}
+              />
+            );
+          })}
+        </ScrollView>
+      </View>
+      }
+    </SafeAreaInsetsContext.Consumer>
   );
 };
 
@@ -78,7 +83,6 @@ const TagChip = ({ filter, selected, onPress }: TagChipProps) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
     paddingHorizontal: 16,
   },
   header: {
