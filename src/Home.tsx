@@ -15,11 +15,12 @@ import { useDebounce } from "./useDebounce";
 export const Home = () => {
   const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
   const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
-  const [displayedMovies, setDisplayedMovies] = useState<Movie[]>([]);
   const [query, setQuery] = useState("");
   const [shouldClear, setShouldClear] = useState(false);
 
   const debouncedQuery = useDebounce(query, 300);
+
+  const displayedMovies = searchResults ?? nowPlaying
 
   useEffect(() => {
     fetchNowPlaying().then(setNowPlaying);
@@ -33,9 +34,8 @@ export const Home = () => {
     fetchSearch(debouncedQuery).then(setSearchResults);
   }, [debouncedQuery]);
 
-  useEffect(() => {
-    setDisplayedMovies(searchResults ?? nowPlaying);
-  }, [searchResults, nowPlaying]);
+
+
 
   useEffect(() => {
     if (shouldClear) {

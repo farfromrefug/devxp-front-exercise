@@ -12,9 +12,11 @@ For each bug you found and fixed, write 2–4 sentences covering:
 
 Add or remove sections as needed — there's no fixed number of bugs to find.
 
-## Bug 1 — _short title_
+## Bug 1 — displayedMovies state
 
-_Your notes_
+We were using a state for `displayedMovies` where we can just use a const in the render loop
+I saw it because the useEffect was simply setting `displayedMovies` when `searchResults` or `nowPlaying`.
+But changing the state of those would couse the render loop for `Home` to be called. So we if we simply set `const displayedMovies = searchResults ?? nowPlaying` it remove the need for another state change (`displayedMovies`)
 
 ## Bug 2 — _short title_
 
