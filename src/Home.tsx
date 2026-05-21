@@ -38,7 +38,6 @@ export const Home = () => {
   const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
   const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
   const [query, setQuery] = useState("");
-  const [shouldClear, setShouldClear] = useState(false);
 
   const debouncedQuery = useDebounce(query, 300);
 
@@ -57,15 +56,12 @@ export const Home = () => {
   }, [debouncedQuery]);
 
 
-
-
-  useEffect(() => {
-    if (shouldClear) {
+  const clearQuery = () => {
+    if (query.length) {
       setQuery("");
       setSearchResults(null);
-      setShouldClear(false);
     }
-  }, [shouldClear]);
+  }
 
   const handleMoviePress = (id: number) => {
     console.log("Movie pressed:", id);
@@ -75,7 +71,7 @@ export const Home = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Recent movies</Text>
 
-      <SearchBar query={query} onChangeText={setQuery} onClear={() => setShouldClear(true)}/>
+      <SearchBar query={query} onChangeText={setQuery} onClear={clearQuery}/>
 
       <FlatList
         data={displayedMovies}

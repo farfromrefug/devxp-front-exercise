@@ -31,13 +31,11 @@ Though SearchBar is using `query`, `setQuery`, `setShouldClear`. To do it right 
 
 The solution is to define `SearchBar` directly in the `Home` returned template
 
-## Bug 3 — _short title_
+## Bug 4 — shouldClear state 
 
-_Your notes_
+`shouldClear` is unecessary and creates too many render calls. When setting to `true` it even immediatly set itself again to `false` inducing 2 renders when one is enough.
 
-## Bug 4 — _short title_
-
-_Your notes_
+The solution is to use a `clearQuery` method which clears `query` and `searchResults` if `query.length` is `> 0`. That way we update all in a single state change
 
 ---
 
