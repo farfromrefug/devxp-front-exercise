@@ -1,6 +1,6 @@
 # Writeup
 
-**Time spent**: _e.g. 3h45_
+**Time spent bug fixes**: around 1h10
 
 ---
 
