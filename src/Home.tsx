@@ -39,7 +39,7 @@ export const Home = () => {
   const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
   const [query, setQuery] = useState("");
 
-  const debouncedQuery = useDebounce(query, 300);
+  const debouncedQuery = useDebounce(query, 1000);
 
   const displayedMovies = searchResults ?? nowPlaying
 

@@ -37,6 +37,10 @@ The solution is to define `SearchBar` directly in the `Home` returned template
 
 The solution is to use a `clearQuery` method which clears `query` and `searchResults` if `query.length` is `> 0`. That way we update all in a single state change
 
+## Bug 5 — useDebounce is not working
+
+the `useDebounce` hook is calling `setTimeout` on each `value` change without clearing the "current" timeout. This is not an anti pattern it is simply a wrong implementation of debounce
+
 ---
 
 ## Anything else?
