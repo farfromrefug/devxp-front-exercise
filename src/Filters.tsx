@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { ALL_FILTERS, type Filter } from "./data/filters";
 import { SafeAreaInsetsContext } from "react-native-safe-area-context";
-import { memo } from "react";
+import { memo, useCallback, useEffect } from "react";
 
 type FormValues = { selectedTags: string[] };
 type TagChipProps = {
@@ -24,13 +24,14 @@ type TagChipMemoProps = {
 
 
 export const Filters = () => {
-  const { watch, setValue } = useForm<FormValues>({
+  const { watch, setValue, getValues } = useForm<FormValues>({
     defaultValues: { selectedTags: [] },
   });
 
   const selectedTags = watch("selectedTags");
 
-  const toggle = (tag: string) => {
+  const toggle = useCallback((tag: string) => {
+    const selectedTags = getValues('selectedTags');
     if (selectedTags.includes(tag)) {
       setValue(
         "selectedTags",
@@ -39,18 +40,8 @@ export const Filters = () => {
     } else {
       setValue("selectedTags", [...selectedTags, tag]);
     }
-  };
+  }, [getValues, setValue]);
 
-  const TagChipMemo = memo(({ filter, selected, toggle }: TagChipMemoProps)=>{
-    return (
-              <TagChip
-                key={filter.id}
-                filter={filter}
-                selected={selected}
-                onPress={() => toggle(filter.id)}
-              />
-            );
-  })
 
   return (
     
@@ -59,17 +50,14 @@ export const Filters = () => {
         <Text style={styles.header}>Filter movies</Text>
         <Text style={styles.subheader}>{selectedTags.length} selected</Text>
         <ScrollView contentContainerStyle={styles.chipContainer}>
-          {ALL_FILTERS.map((filter) => {
-            const isSelected = selectedTags.includes(filter.id);
-            return (
+          {ALL_FILTERS.map((filter) => (
               <TagChipMemo
                 key={filter.id}
                 filter={filter}
-                selected={isSelected}
+                selected={selectedTags.includes(filter.id)}
                 toggle={toggle}
               />
-            );
-          })}
+            ))}
         </ScrollView>
       </View>
       }
@@ -77,7 +65,8 @@ export const Filters = () => {
   );
 };
 
-const TagChip = ({ filter, selected, onPress }: TagChipProps) => (
+const TagChip = ({ filter, selected, onPress }: TagChipProps) => {
+  return (
   <Pressable
     onPress={onPress}
     style={[styles.chip, selected && styles.chipSelected]}
@@ -94,7 +83,18 @@ const TagChip = ({ filter, selected, onPress }: TagChipProps) => (
       </Text>
     </View>
   </Pressable>
-);
+)};
+
+const TagChipMemo = memo(({ filter, selected, toggle }: TagChipMemoProps)=>{
+  return (
+            <TagChip
+              key={filter.id}
+              filter={filter}
+              selected={selected}
+              onPress={() => toggle(filter.id)}
+            />
+          );
+})
 
 const styles = StyleSheet.create({
   container: {
