@@ -1,6 +1,6 @@
 # Writeup
 
-**Time spent bug fixes**: around 1h20
+**Time spent bug fixes**: around 1h30
 
 ---
 
@@ -61,6 +61,8 @@ The cleaner solution is to use `selectedTags` directly in `toggle`
 
 On every render pass we loop `ALL_FILTERS` and return a `TagChip`. So as we watch `selectedTags`, on every toggle of a chip we trigger a `Filters` render and thus the `ALL_FILTERS` and thus a `TagChip` render for every chip.
 We use memo to skip rendering `TagChip` when it has not changed
+
+EDIT: after logging my `TagChip` render i realized my fix was not enough because i misunderstood 2 things: my `memo` inside the render method was not good, it has to be "outside", but also the toggle method was changing on every render because of `selectedTags` change, effectively rendering my `memo` useless. Using form `getValues` and `useCallback` was the final fix.
 
 ---
 
