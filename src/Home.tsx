@@ -1,8 +1,9 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -12,7 +13,7 @@ import { MovieTitle } from "./MovieTitle";
 import { fetchNowPlaying, fetchSearch, type Movie } from "./tmdb";
 import { useDebounce } from "./useDebounce";
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
-
+import useAsyncStorage from "./useAsyncStorage";
 
 const SearchBar = ({query, onChangeText, onClear}: {query:string; onChangeText: (text: string) => void; onClear: ()=>void}) => (
   <View style={styles.searchBar}>
@@ -34,12 +35,14 @@ const SearchBar = ({query, onChangeText, onClear}: {query:string; onChangeText: 
     </Pressable>
   </View>
 );
+
 export const Home = () => {
   const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
   const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
   const [query, setQuery] = useState("");
 
-  const debouncedQuery = useDebounce(query, 1000);
+  const [debouncedQuery, setDebouncedQuery] = useDebounce(query, 1000);
+  const [lastQueries, setLastQueries] = useAsyncStorage<string[]>("lastQueries", []);
 
   const displayedMovies = searchResults ?? nowPlaying
 
@@ -52,20 +55,30 @@ export const Home = () => {
       setSearchResults(null);
       return;
     }
+    // dedup by first removing if existing then pushing
+    const set = new Set([...lastQueries])
+    set.delete(debouncedQuery);
+    const newLastQueries = [...set, debouncedQuery].slice(-5)
+    setLastQueries(newLastQueries);
     fetchSearch(debouncedQuery).then(setSearchResults);
   }, [debouncedQuery]);
 
 
-  const clearQuery = () => {
+  const clearQuery = useCallback(() => {
     if (query.length) {
       setQuery("");
       setSearchResults(null);
     }
-  }
+  }, [query]);
 
-  const handleMoviePress = (id: number) => {
+  const handleMoviePress = useCallback((id: number) => {
     console.log("Movie pressed:", id);
-  };
+  }, []);
+
+  const setQueryFromRecent = useCallback((historyQuery: string) => {
+    setDebouncedQuery(historyQuery);
+    setQuery(historyQuery);
+  }, []);
 
   return (
     <SafeAreaInsetsContext.Consumer>
@@ -73,6 +86,7 @@ export const Home = () => {
         <Text style={styles.header}>Recent movies</Text>
 
         <SearchBar query={query} onChangeText={setQuery} onClear={clearQuery}/>
+        <RecentSearch lastQueries={lastQueries} setQueryFromRecent={setQueryFromRecent} />
 
         <FlatList
           data={displayedMovies}
@@ -98,6 +112,42 @@ const MovieRow = ({ movie, onPress }: MovieRowProps) => (
     <MovieTitle title={movie.title} />
   </Pressable>
 );
+
+type RecentSearchProps = {
+  lastQueries: string[],
+  setQueryFromRecent: (query: string) => void
+}
+type RecentChipProps = {
+  query: string,
+  onChipPress: (query: string) => void
+}
+
+const RecentChip = memo(({ query, onChipPress }: RecentChipProps)=>{
+    return (
+      <Pressable
+          onPress={() => onChipPress(query)}
+          style={styles.chip}
+        >
+          <Text style={styles.chipText}>
+            {query}
+          </Text>
+        </Pressable>
+    );
+  })
+const RecentSearch = ({lastQueries, setQueryFromRecent}: RecentSearchProps) => {
+
+  return (<ScrollView contentContainerStyle={styles.searchRecent}>
+    {lastQueries.map((query) => {
+      return (
+        <RecentChip
+          key={query}
+          query={query}
+          onChipPress={setQueryFromRecent}
+        />
+      );
+    })}
+  </ScrollView>)
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -146,5 +196,39 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 8,
+  },
+  searchRecent: {
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingVertical: 10,
+  },
+  chipContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingBottom: 16,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: "#fafafa",
+    borderWidth: 1.5,
+    borderColor: "#d4d4d4",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  chipText: {
+    color: "#1a1a1a",
+    fontSize: 13,
+    fontWeight: "600",
   },
 });

@@ -1,6 +1,7 @@
 # Writeup
 
 **Time spent bug fixes**: around 1h30
+**Time spent phase 2**: around 30min with writeup
 
 ---
 
@@ -72,5 +73,19 @@ EDIT: after logging my `TagChip` render i realized my fix was not enough because
 
 * `applyTypography` is effectively doing nothing so my mind is saying that heavy operation should be done after fetching through `fetchSearch` or `fetchNowPlaying`. But in the meantime as to comment says it is supposed to compute kerning for react-native, it does make sense to do it here and have it "depend" on title.
 
+* with more time i would rewrite the fetch from movies to handle errors, loading... Especially as we have the expensive task on each movie item it would be nice to show a loading so that the user understands better what s happening. 
+
+* i went fast on design for phase 2. I "copied" TagChip design to go fast but it could be a nicer design
 
 Anything that surprised you, anything you'd do differently with more time, anything you suspect is still buggy but couldn't pin down — drop it here. Optional.
+
+
+## Phase 2
+
+I implemented the persistent storage using `"@react-native-async-storage/async-storage"` and creating a `useAsyncStorage` hook.
+I also modified `useDebounce` to return the setter directly. The reason is that on "history select" i did not want to go through the debounce. It was not needed and was a better experience for the user.
+I "copied" the `TagChip/Filters` design to implement `RecentSearch` quickly.
+I also made sure that not all `RecentChip` re-render on "change".
+Finally i used `Set` to easily handle dedup/queuing of search history.
+
+If i had more time i would rewrite the `debouncedQuery/query` to use only one state variable. Right now i need to do `setDebouncedQuery` and `setQuery` in `setQueryFromRecent`. It does not feel good.
