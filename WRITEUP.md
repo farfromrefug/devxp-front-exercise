@@ -89,3 +89,8 @@ I also made sure that not all `RecentChip` re-render on "change".
 Finally i used `Set` to easily handle dedup/queuing of search history.
 
 If i had more time i would rewrite the `debouncedQuery/query` to use only one state variable. Right now i need to do `setDebouncedQuery` and `setQuery` in `setQueryFromRecent`. It does not feel good.
+
+## Phase 3
+
+I added the `Image` for poster inside `MovieRow`. I create a quick designed, used `resizeMode` to use aspect fit for image, and i use a network based default image in case there was no poster. I prefered the default poster image over "no Image" because that way the titles are always aligned
+Using a local image would be best in this case.

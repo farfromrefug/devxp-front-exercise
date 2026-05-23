@@ -109,6 +109,9 @@ type MovieRowProps = {
 
 const MovieRow = ({ movie, onPress }: MovieRowProps) => (
   <Pressable onPress={() => onPress(movie.id)} style={styles.item}>
+    {
+      <Image style={styles.poster} source={{uri:movie?.poster_path? `https://image.tmdb.org/t/p/w200${movie?.poster_path}`: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.wikia.nocookie.net%2Fideas%2Fimages%2F6%2F66%2FFoxAndroidTM2%27s_No_Poster.jpg%2Frevision%2Flatest%3Fcb%3D20230213155127&f=1&nofb=1&ipt=faa14f5f99030b3339e6d214676bb820d37b1e595f866487d64271dc3f196a74'}} resizeMode="contain"/> 
+    }
     <MovieTitle title={movie.title} />
   </Pressable>
 );
@@ -185,7 +188,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    // flexDirection: "row",
+    flexDirection: "row",
     alignItems: "center",
   },
   title: {
@@ -193,8 +196,9 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   poster: {
+    marginRight:10,
     width: 50,
-    height: 50,
+    height: 60,
     borderRadius: 8,
   },
   searchRecent: {
