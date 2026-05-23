@@ -13,6 +13,9 @@ import { MovieTitle } from "./MovieTitle";
 import { fetchNowPlaying, fetchSearch, type Movie } from "./tmdb";
 import { useDebounce } from "./useDebounce";
 import useAsyncStorage from "./useAsyncStorage";
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const SearchBar = ({query, onChangeText, onClear}: {query:string; onChangeText: (text: string) => void; onClear: ()=>void}) => (
   <View style={styles.searchBar}>
@@ -34,24 +37,50 @@ const SearchBar = ({query, onChangeText, onClear}: {query:string; onChangeText: 
     </Pressable>
   </View>
 );
+const Loader = ()=> (
+  <View style={styles.loadingContainer}>
+    <Text style={styles.loading}>Loading movies...</Text>
+  </View>
+)
+const Error = ({message}: {message: string})=> (
+  <View style={styles.errorContainer}>
+    <Text style={styles.error}>{message}</Text>
+  </View>
+)
+
+const TMDBFlatList = ({query}: {query: string}) => {
+  const isSearch = query?.length > 0
+  const { data } = useSuspenseQuery({
+    queryKey: ['tmdb', {query, api: isSearch ? 'search' : 'now_playing'}],
+    queryFn: () => isSearch ? fetchSearch(query): fetchNowPlaying(),
+    staleTime: (isSearch ? 60 : 5) * 60 * 1000, // cache for 5 min for nowPlaying, 1h for search
+  });
+
+  const handleMoviePress = useCallback((id: number) => {
+    console.log("Movie pressed:", id);
+  }, []);
+
+  if (data.length) {
+    return (<FlatList
+        data={data}
+        renderItem={({ item }) => (
+          <MovieRow movie={item} onPress={(id) => handleMoviePress(id)} />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />)
+  }
+  return (<Error message="No movie found"/>)
+};
 
 export const Home = () => {
-  const [nowPlaying, setNowPlaying] = useState<Movie[]>([]);
-  const [searchResults, setSearchResults] = useState<Movie[] | null>(null);
   const [query, setQuery] = useState("");
 
   const [debouncedQuery, setDebouncedQuery] = useDebounce(query, 1000);
   const [lastQueries, setLastQueries] = useAsyncStorage<string[]>("lastQueries", []);
 
-  const displayedMovies = searchResults ?? nowPlaying
-
-  useEffect(() => {
-    fetchNowPlaying().then(setNowPlaying);
-  }, []);
 
   useEffect(() => {
     if (!debouncedQuery) {
-      setSearchResults(null);
       return;
     }
     // dedup by first removing if existing then pushing
@@ -59,20 +88,15 @@ export const Home = () => {
     set.delete(debouncedQuery);
     const newLastQueries = [...set, debouncedQuery].slice(-5)
     setLastQueries(newLastQueries);
-    fetchSearch(debouncedQuery).then(setSearchResults);
   }, [debouncedQuery]);
 
 
   const clearQuery = useCallback(() => {
     if (query.length) {
+      setDebouncedQuery("");
       setQuery("");
-      setSearchResults(null);
     }
   }, [query]);
-
-  const handleMoviePress = useCallback((id: number) => {
-    console.log("Movie pressed:", id);
-  }, []);
 
   const setQueryFromRecent = useCallback((historyQuery: string) => {
     setDebouncedQuery(historyQuery);
@@ -85,14 +109,11 @@ export const Home = () => {
 
       <SearchBar query={query} onChangeText={setQuery} onClear={clearQuery}/>
       <RecentSearch lastQueries={lastQueries} setQueryFromRecent={setQueryFromRecent} />
-
-      <FlatList
-        data={displayedMovies}
-        renderItem={({ item }) => (
-          <MovieRow movie={item} onPress={(id) => handleMoviePress(id)} />
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      <ErrorBoundary fallbackRender={({ error }: { error: any }) => <Error message={`Failed to load Movies: ${error.message}`}/>}>
+        <Suspense fallback={<Loader/>}>
+          <TMDBFlatList query={debouncedQuery}/>
+        </Suspense>
+      </ErrorBoundary> 
     </View>
   );
 };
@@ -134,7 +155,7 @@ const RecentChip = memo(({ query, onChipPress }: RecentChipProps)=>{
   })
 const RecentSearch = ({lastQueries, setQueryFromRecent}: RecentSearchProps) => {
 
-  return (<ScrollView contentContainerStyle={styles.searchRecent}>
+  return (<ScrollView contentContainerStyle={styles.searchRecent} style={styles.searchRecentHolder} horizontal={true}>
     {lastQueries.map((query) => {
       return (
         <RecentChip
@@ -196,12 +217,15 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 8,
   },
+  searchRecentHolder: {
+    flexGrow:0,
+    height:50,
+  },
   searchRecent: {
     paddingHorizontal: 16,
+    height:30,
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: 8,
-    paddingVertical: 10,
   },
   chipContainer: {
     flexDirection: "row",
@@ -229,5 +253,23 @@ const styles = StyleSheet.create({
     color: "#1a1a1a",
     fontSize: 13,
     fontWeight: "600",
+  },
+  loadingContainer : {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  loading : {
+    fontSize: 17,
+  },
+  errorContainer : {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  error : {
+    fontSize: 17,
   },
 });

@@ -4,6 +4,7 @@
 **Time spent phase 2**: around 30min with writeup
 **Time spent phase 3**: around 10min with writeup
 **Time spent phase 4**: around 5min with writeup
+**Time spent phase 5**: around 1h30 with doc reading and writeup
 
 ---
 
@@ -99,4 +100,15 @@ Using a local image would be best in this case.
 
 ## Phase 4
 
-It was actually almost fixed as i marked it as a bug in phase 1. But i forgot to apply bottom inset. Also i did apply `SafeAreaInsetsContext.Consumer` in both `Home` and `Filters` which was not necessary. I refactored it to use it directly in App.tsx
+It was actually almost fixed as i marked it as a bug in phase 1. But i forgot to apply bottom inset. Also i did apply `SafeAreaInsetsContext.Consumer` in both `Home` and `Filters` which was not necessary. I refactored it to use it directly in `App`
+
+
+## Phase 5
+
+I spent sometime reading and understanding `@tanstack/react-query` and `Suspense` which i had never used. 
+
+I added `@tanstack/react-query`, used `QueryClientProvider` as `App` query provider, then i used `useSuspenseQuery` to fetch nowPlaying or search.
+What i did is to create a new `TMDBFlatList` component where i handle the `useSuspenseQuery`. That component now also handle the case of "no movie found". `TMDBFlatList` detect automatically if it must use `fetchSearch` or `fetchNowPlaying` based on the query length. It also uses a different staleTime (nowPlaying changes a lot more), and a `queryKey` which saying which host we are fetching, which api and which query. That way it should be stable enough to be used everywhere in the app.
+`Suspense` will handle the loading message with `fallback` and `ErrorBoundary` will handled the error message (tested by throwing in fetchNowPlaying). I fixed a bit of styling issues i had from my previous code like `RecentSearch` was growing too much which was visible with loading message.
+
+I have not seen a bug with my inclusion of `Suspense`, either i missed it or it was "fixed" in the way i implemented it.
