@@ -2,6 +2,8 @@
 
 **Time spent bug fixes**: around 1h30
 **Time spent phase 2**: around 30min with writeup
+**Time spent phase 3**: around 10min with writeup
+**Time spent phase 4**: around 5min with writeup
 
 ---
 
@@ -94,3 +96,7 @@ If i had more time i would rewrite the `debouncedQuery/query` to use only one st
 
 I added the `Image` for poster inside `MovieRow`. I create a quick designed, used `resizeMode` to use aspect fit for image, and i use a network based default image in case there was no poster. I prefered the default poster image over "no Image" because that way the titles are always aligned
 Using a local image would be best in this case.
+
+## Phase 4
+
+It was actually almost fixed as i marked it as a bug in phase 1. But i forgot to apply bottom inset. Also i did apply `SafeAreaInsetsContext.Consumer` in both `Home` and `Filters` which was not necessary. I refactored it to use it directly in App.tsx

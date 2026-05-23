@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Home } from './src/Home';
 import { Filters } from './src/Filters';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 type Tab = 'home' | 'filters';
 
@@ -12,25 +13,28 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <View style={styles.root}>
-        <View style={styles.screen}>
-          {tab === 'home' ? <Home /> : <Filters />}
-        </View>
-        <View style={styles.tabBar}>
-          <Pressable
-            onPress={() => setTab('home')}
-            style={[styles.tab, tab === 'home' && styles.tabActive]}
-          >
-            <Text style={styles.tabLabel}>Home</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setTab('filters')}
-            style={[styles.tab, tab === 'filters' && styles.tabActive]}
-          >
-            <Text style={styles.tabLabel}>Filters</Text>
-          </Pressable>
-        </View>
-      </View>
+      <SafeAreaInsetsContext.Consumer>
+            {insets =>  <View style={{ ...styles.root, paddingTop: insets?.top ?? 0, paddingBottom: insets?.bottom   ?? 0 }}>
+            <View style={styles.screen}>
+              {tab === 'home' ? <Home /> : <Filters />}
+            </View>
+            <View style={styles.tabBar}>
+              <Pressable
+                onPress={() => setTab('home')}
+                style={[styles.tab, tab === 'home' && styles.tabActive]}
+              >
+                <Text style={styles.tabLabel}>Home</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setTab('filters')}
+                style={[styles.tab, tab === 'filters' && styles.tabActive]}
+              >
+                <Text style={styles.tabLabel}>Filters</Text>
+              </Pressable>
+            </View>
+          </View>
+        }
+      </SafeAreaInsetsContext.Consumer>
       <StatusBar style="auto" />
     </SafeAreaProvider>
   );
@@ -47,7 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#ddd',
-    paddingBottom: 24,
   },
   tab: {
     flex: 1,

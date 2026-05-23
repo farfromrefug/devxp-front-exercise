@@ -12,7 +12,6 @@ import {
 import { MovieTitle } from "./MovieTitle";
 import { fetchNowPlaying, fetchSearch, type Movie } from "./tmdb";
 import { useDebounce } from "./useDebounce";
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import useAsyncStorage from "./useAsyncStorage";
 
 const SearchBar = ({query, onChangeText, onClear}: {query:string; onChangeText: (text: string) => void; onClear: ()=>void}) => (
@@ -81,24 +80,20 @@ export const Home = () => {
   }, []);
 
   return (
-    <SafeAreaInsetsContext.Consumer>
-      {insets =>  <View style={{ ...styles.container, paddingTop: insets?.top ?? 0 }}>
-        <Text style={styles.header}>Recent movies</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Recent movies</Text>
 
-        <SearchBar query={query} onChangeText={setQuery} onClear={clearQuery}/>
-        <RecentSearch lastQueries={lastQueries} setQueryFromRecent={setQueryFromRecent} />
+      <SearchBar query={query} onChangeText={setQuery} onClear={clearQuery}/>
+      <RecentSearch lastQueries={lastQueries} setQueryFromRecent={setQueryFromRecent} />
 
-        <FlatList
-          data={displayedMovies}
-          renderItem={({ item }) => (
-            <MovieRow movie={item} onPress={(id) => handleMoviePress(id)} />
-          )}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      </View>
-      }
-    </SafeAreaInsetsContext.Consumer>
-    
+      <FlatList
+        data={displayedMovies}
+        renderItem={({ item }) => (
+          <MovieRow movie={item} onPress={(id) => handleMoviePress(id)} />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </View>
   );
 };
 

@@ -45,23 +45,20 @@ export const Filters = () => {
 
   return (
     
-    <SafeAreaInsetsContext.Consumer>
-          {insets =>  <View style={{ ...styles.container, paddingTop: insets?.top ?? 0 }}>
-        <Text style={styles.header}>Filter movies</Text>
-        <Text style={styles.subheader}>{selectedTags.length} selected</Text>
-        <ScrollView contentContainerStyle={styles.chipContainer}>
-          {ALL_FILTERS.map((filter) => (
-              <TagChipMemo
-                key={filter.id}
-                filter={filter}
-                selected={selectedTags.includes(filter.id)}
-                toggle={toggle}
-              />
-            ))}
-        </ScrollView>
-      </View>
-      }
-    </SafeAreaInsetsContext.Consumer>
+    <View style={styles.container}>
+      <Text style={styles.header}>Filter movies</Text>
+      <Text style={styles.subheader}>{selectedTags.length} selected</Text>
+      <ScrollView contentContainerStyle={styles.chipContainer}>
+        {ALL_FILTERS.map((filter) => (
+            <TagChipMemo
+              key={filter.id}
+              filter={filter}
+              selected={selectedTags.includes(filter.id)}
+              toggle={toggle}
+            />
+          ))}
+      </ScrollView>
+    </View>
   );
 };
 
